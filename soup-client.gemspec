@@ -4,8 +4,8 @@ require File.expand_path('../lib/soup-client/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Piotr Niełacny"]
   gem.email         = ["piotr.nielacny@gmail.com"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.description   = %q{soup.io client}
+  gem.summary       = %q{soup.io client}
   gem.homepage      = ""
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
