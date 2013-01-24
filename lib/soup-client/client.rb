@@ -47,10 +47,36 @@ module Soup
     end
 
     def post_submit(request)
-      agent = @agent.faraday("http://#{@login}.soup.io")
-      agent.post('/save', request) do |req|
-        req.headers["Cookie"] = "soup_session_id=#{session_id}"
+      attempts = 0
+
+      begin
+          agent = @agent.faraday("http://#{@login}.soup.io")
+          response = agent.post('/save', request) do |req|
+              req.headers["Cookie"] = "soup_session_id=#{session_id}"
+          end
+          check_response(response)
+      rescue Exception => e
+          attempts += 1
+          if attempts < 5 then
+              if e.message == "invalid session" then
+                  self.login
+              end
+              sleep 10
+              retry
+          end
       end
+    end
+
+    def check_response(response)
+        if response.status == 502 then
+            raise "bad gateway"
+        end
+
+        cookie = response.headers['set-cookie']
+        cookie      = CGI::Cookie.parse(cookie)
+        if cookie['soup_session_id'].first == 'invalid' then
+            raise "invalid session"
+        end
     end
 
     def new_link(url, title = '', description = '')
